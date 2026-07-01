@@ -1,0 +1,243 @@
+# Public category taxonomy for money-manager (shipped with the repo).
+# Copy to data/categories.yaml for local customization (gitignored).
+#
+# Match order: first category/subcategory whose keywords hit wins.
+# Keywords are case-insensitive substring matches on normalized description.
+# This file ships with empty keyword lists — add your own payee strings locally.
+
+version: 2
+
+categories:
+  - id: income
+    name: Income
+    type: inflow
+    subcategories:
+      - id: payroll
+        name: Payroll & Wages
+        keywords: []
+        # Regular wages, salary, and employer direct deposits
+
+      - id: benefits
+        name: Benefits & Government
+        keywords: []
+        # Government benefits, unemployment, and similar recurring inflows
+
+      - id: refunds
+        name: Refunds & Tax
+        keywords: []
+        # Tax refunds, purchase returns, and rebate credits
+
+      - id: transfers_in
+        name: Transfers In
+        keywords: []
+        # Money moved into this account from another account or person
+
+  - id: subscriptions
+    name: Subscriptions
+    type: outflow
+    subcategories:
+      - id: software_saas
+        name: Software & Digital Services
+        keywords: []
+        # Recurring software, cloud storage, and digital tool subscriptions
+
+      - id: streaming
+        name: Streaming & Media
+        keywords: []
+        # Video, music, audiobook, and other media subscriptions
+
+      - id: memberships
+        name: Memberships
+        keywords: []
+        # Gym, club, warehouse, and other recurring membership fees
+
+      - id: news_media
+        name: News & Media
+        keywords: []
+        # News, journalism, and creator platform subscriptions
+
+  - id: restaurants
+    name: Restaurants & Dining
+    type: outflow
+    subcategories:
+      - id: fast_food
+        name: Fast Food
+        keywords: []
+        # Quick-service and chain restaurant purchases
+
+      - id: coffee
+        name: Coffee & Cafes
+        keywords: []
+        # Coffee shops and cafe dining
+
+      - id: sit_down
+        name: Sit-Down & Delivery
+        keywords: []
+        # Full-service restaurants and food delivery orders
+
+  - id: groceries
+    name: Groceries
+    type: outflow
+    subcategories:
+      - id: supermarkets
+        name: Supermarkets
+        keywords: []
+        # Grocery stores and everyday food shopping
+
+      - id: warehouse
+        name: Warehouse Clubs
+        keywords: []
+        # Bulk and membership-based grocery retailers
+
+  - id: online_shopping
+    name: Online Shopping
+    type: outflow
+    subcategories:
+      - id: marketplaces
+        name: Online Marketplaces
+        keywords: []
+        # Large online retailers and marketplace purchases
+
+      - id: general_ecommerce
+        name: General E-Commerce
+        keywords: []
+        # Smaller online shops and independent sellers
+
+  - id: travel_transport
+    name: Travel & Transport
+    type: outflow
+    subcategories:
+      - id: flights
+        name: Flights
+        keywords: []
+        # Airline tickets and flight-related charges
+
+      - id: gas
+        name: Gas & Fuel
+        keywords: []
+        # Gas stations and vehicle fuel
+
+      - id: rentals
+        name: Car & Lodging Rentals
+        keywords: []
+        # Vehicle rentals, hotels, and short-term lodging
+
+      - id: rides_transit
+        name: Rides & Transit
+        keywords: []
+        # Rideshare, public transit, tolls, and parking
+
+  - id: auto
+    name: Auto
+    type: outflow
+    subcategories:
+      - id: parts_service
+        name: Parts & Service
+        keywords: []
+        # Auto parts, maintenance, and car wash
+
+      - id: insurance
+        name: Auto Insurance
+        keywords: []
+        # Vehicle insurance premiums
+
+      - id: registration
+        name: Registration & Fees
+        keywords: []
+        # Vehicle registration, licensing, and government auto fees
+
+  - id: health
+    name: Health & Pharmacy
+    type: outflow
+    subcategories:
+      - id: pharmacy
+        name: Pharmacy
+        keywords: []
+        # Prescription and over-the-counter pharmacy purchases
+
+      - id: medical
+        name: Medical & Dental
+        keywords: []
+        # Doctor, hospital, dental, and vision care
+
+      - id: supplements
+        name: Supplements & Wellness
+        keywords: []
+        # Vitamins, supplements, and wellness products
+
+  - id: shopping
+    name: Shopping & Retail
+    type: outflow
+    subcategories:
+      - id: sporting_goods
+        name: Sporting Goods
+        keywords: []
+        # Sports equipment and outdoor gear
+
+      - id: home_improvement
+        name: Home Improvement
+        keywords: []
+        # Hardware, building supplies, and home project materials
+
+      - id: general_retail
+        name: General Retail
+        keywords: []
+        # Department stores and general merchandise
+
+  - id: finance
+    name: Finance & Loans
+    type: outflow
+    subcategories:
+      - id: loan_payments
+        name: Loan Payments
+        keywords: []
+        # Personal, student, and other loan repayments
+
+      - id: credit_cards
+        name: Credit Card Payments
+        keywords: []
+        # Credit card bill payments
+
+      - id: installment_plans
+        name: Installment Plans
+        keywords: []
+        # Buy-now-pay-later and split-payment services
+
+      - id: fees
+        name: Bank & Card Fees
+        keywords: []
+        # Overdraft, maintenance, ATM, and late fees
+
+  - id: personal
+    name: Personal & Other
+    type: outflow
+    subcategories:
+      - id: grooming
+        name: Personal Care
+        keywords: []
+        # Haircuts, salon, and personal grooming
+
+      - id: entertainment
+        name: Entertainment & Activities
+        keywords: []
+        # Movies, events, recreation, and leisure activities
+
+      - id: transfers_out
+        name: Transfers Out
+        keywords: []
+        # Money sent to another account or person
+
+      - id: gifts
+        name: Gifts & Donations
+        keywords: []
+        # Gifts, charitable giving, and crowdfunding
+
+      - id: uncategorized
+        name: Uncategorized
+        keywords: []
+
+vendor_whitelist:
+  enabled: false
+  notes: >-
+    Future stat: % spend with whitelisted vendors. Populate after user defines list.
+  vendors: []

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Money Manager</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" defer></script>
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <div class="header-brand">
+        <span class="brand-mark" aria-hidden="true">◈</span>
+        <h1>Money Manager</h1>
+      </div>
+
+      <div class="header-controls">
+        <label class="control-group">
+          <span class="control-label">Account</span>
+          <select id="account-select" class="select" aria-label="Select account">
+            <option value="">Loading…</option>
+          </select>
+        </label>
+
+        <div class="control-group period-toggle" role="group" aria-label="Date range">
+          <span class="control-label">Period</span>
+          <div class="btn-group" id="period-toggle">
+            <button type="button" class="btn btn-toggle active" data-period="monthly">Monthly</button>
+            <button type="button" class="btn btn-toggle" data-period="quarterly">Quarterly</button>
+            <button type="button" class="btn btn-toggle" data-period="yearly">Yearly</button>
+            <button type="button" class="btn btn-toggle" data-period="total">Total</button>
+          </div>
+        </div>
+
+        <button type="button" id="theme-toggle" class="btn btn-ghost btn-icon theme-toggle" aria-label="Switch to dark mode" title="Dark mode" data-theme="light">
+          <svg class="theme-icon theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+          </svg>
+          <svg class="theme-icon theme-icon-moon hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+
+        <button type="button" id="btn-import" class="btn btn-primary">
+          <span aria-hidden="true">↑</span> Import CSV
+        </button>
+      </div>
+
+      <div id="backend-status" class="backend-status" role="status" aria-live="polite"></div>
+    </header>
+
+    <section class="stats-strip" id="stats-strip" aria-label="Key metrics">
+      <div class="stat-card">
+        <span class="stat-label" id="stat-label-income">Monthly income</span>
+        <span class="stat-value" id="stat-income">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label" id="stat-label-burn">Monthly burn</span>
+        <span class="stat-value" id="stat-burn">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label" id="stat-label-net">Monthly net flow</span>
+        <span class="stat-value" id="stat-net">—</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label" id="stat-label-balance">Monthly balance</span>
+        <span class="stat-value" id="stat-balance">—</span>
+      </div>
+    </section>
+
+    <main class="main-layout">
+      <aside class="sidebar" aria-label="Categories">
+        <div class="sidebar-header">
+          <h2>Categories</h2>
+          <button type="button" id="btn-add-category" class="btn btn-ghost btn-sm" title="Create custom category">+</button>
+        </div>
+        <div id="category-stack" class="category-stack scroll-pane">
+          <div class="loading-placeholder">Loading categories…</div>
+        </div>
+      </aside>
+
+      <div class="center-column">
+        <section class="chart-panel" aria-label="Charts">
+          <div class="chart-toolbar">
+            <h2>Overview</h2>
+            <div class="btn-group" id="chart-type-toggle" role="group" aria-label="Chart type">
+              <button type="button" class="btn btn-toggle active" data-chart="inflow-outflow">Inflow / Outflow</button>
+              <button type="button" class="btn btn-toggle" data-chart="category-pie">By Category</button>
+              <button type="button" class="btn btn-toggle" data-chart="trend">Trend</button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="main-chart" aria-label="Financial chart"></canvas>
+            <div id="chart-empty" class="chart-empty hidden">
+              <p>No data for this period.</p>
+              <p class="muted">Import a bank statement CSV to get started.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="projections-panel" aria-label="What-if projections">
+          <div class="projections-header whatif-header-row">
+            <div class="whatif-header-text">
+              <h2>What-if</h2>
+              <p class="muted">Adjust spending for selected category</p>
+            </div>
+            <div class="period-toggle-row control-group" role="group" aria-label="View impact period">
+              <span class="control-label">View impact as</span>
+              <div class="btn-group" id="whatif-stats-period-toggle">
+                <button type="button" class="btn btn-toggle active" data-period="monthly">Monthly</button>
+                <button type="button" class="btn btn-toggle" data-period="quarterly">Quarterly</button>
+                <button type="button" class="btn btn-toggle" data-period="yearly">Yearly</button>
+                <button type="button" class="btn btn-toggle" data-period="total">Total</button>
+              </div>
+            </div>
+          </div>
+          <div class="whatif-banner stats-strip" id="whatif-banner" aria-label="Projected effects">
+            <div class="stat-card">
+              <span class="stat-label" id="whatif-label-income">Effect on monthly income</span>
+              <span class="stat-value" id="whatif-income">—</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label" id="whatif-label-burn">Effect on monthly burn</span>
+              <span class="stat-value" id="whatif-burn">—</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label" id="whatif-label-net">Effect on monthly net flow</span>
+              <span class="stat-value" id="whatif-net">—</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label" id="whatif-label-balance">Effect on monthly balance</span>
+              <span class="stat-value" id="whatif-balance">—</span>
+            </div>
+          </div>
+          <div id="projections-controls" class="projections-controls scroll-pane"></div>
+          <div class="period-toggle-row whatif-slider-period-row control-group" role="group" aria-label="Slider period">
+            <span class="control-label">Slider period</span>
+            <div class="btn-group" id="whatif-slider-period-toggle">
+              <button type="button" class="btn btn-toggle active" data-period="monthly">Monthly</button>
+              <button type="button" class="btn btn-toggle" data-period="quarterly">Quarterly</button>
+              <button type="button" class="btn btn-toggle" data-period="yearly">Yearly</button>
+              <button type="button" class="btn btn-toggle" data-period="total">Total</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="inbox-panel" aria-label="Category transactions">
+        <div class="inbox-resize-handle" role="separator" aria-orientation="vertical" aria-label="Resize transaction panel" tabindex="0"></div>
+        <div class="inbox-header">
+          <div class="drawer-title-row">
+            <h2 id="drawer-title">Transactions</h2>
+            <button type="button" id="drawer-rename-btn" class="btn btn-ghost btn-icon drawer-rename-btn hidden" aria-label="Rename category" title="Rename category">✎</button>
+          </div>
+          <p class="inbox-hint" id="drawer-hint">Select a category on the left to view its transactions</p>
+        </div>
+        <div id="transaction-list" class="transaction-list scroll-pane">
+          <div class="loading-placeholder">Loading transactions…</div>
+        </div>
+        <div class="inbox-footer" aria-hidden="true"></div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="import-modal" class="modal">
+    <form method="dialog" class="modal-content" id="import-form">
+      <header class="modal-header">
+        <h2>Import Bank Statement</h2>
+        <button type="button" class="btn btn-ghost btn-icon" id="import-close" aria-label="Close">×</button>
+      </header>
+      <div id="drop-zone" class="drop-zone" tabindex="0">
+        <div class="drop-zone-inner">
+          <span class="drop-icon" aria-hidden="true">📄</span>
+          <p>Drag &amp; drop your bank statement CSV here</p>
+          <p class="muted">or</p>
+          <label class="btn btn-secondary">
+            Browse files
+            <input type="file" id="file-input" accept=".csv,text/csv" hidden>
+          </label>
+        </div>
+      </div>
+      <div id="import-progress" class="import-progress hidden">
+        <div class="spinner" aria-hidden="true"></div>
+        <span>Importing…</span>
+      </div>
+      <div id="import-result" class="import-result hidden" role="status"></div>
+    </form>
+  </dialog>
+
+  <dialog id="category-modal" class="modal">
+    <form method="dialog" class="modal-content" id="category-form">
+      <header class="modal-header">
+        <h2>Create Category</h2>
+        <button type="button" class="btn btn-ghost btn-icon" id="category-close" aria-label="Close">×</button>
+      </header>
+      <label class="field">
+        <span class="field-label">Name</span>
+        <input type="text" id="category-name" class="input" required placeholder="e.g. Pet Care" autocomplete="off">
+      </label>
+      <label class="field">
+        <span class="field-label">Type</span>
+        <select id="category-type" class="select">
+          <option value="outflow">Expense (outflow)</option>
+          <option value="inflow">Income (inflow)</option>
+        </select>
+      </label>
+      <footer class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="category-cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Create</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <dialog id="bulk-categorize-modal" class="modal">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h2>Apply to matching entries?</h2>
+        <button type="button" class="btn btn-ghost btn-icon" id="bulk-categorize-cancel" aria-label="Close">×</button>
+      </header>
+      <p id="bulk-categorize-message" class="bulk-categorize-message"></p>
+      <footer class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="bulk-categorize-one">Just this one</button>
+        <button type="button" class="btn btn-primary" id="bulk-categorize-all">Yes, apply to all</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <div id="similar-hint" class="similar-hint hidden" role="tooltip"></div>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

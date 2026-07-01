@@ -1,0 +1,27 @@
+# Local environment and secrets
+.env
+.venv/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Local database (personal transactions)
+data/money_manager.db
+data/*.db
+
+# Personal category overrides (copy from categories.dist.yaml)
+data/categories.yaml
+
+# Personal bank statement exports
+data/stmt_*.csv
+data/*.csv
+!tests/fixtures/*.csv
+data/*.csv:Zone.Identifier
+
+# Private session notes (never commit)
+SESSION_LOG.md
+SESSION_PLAN.md
+
+# Test cache
+.pytest_cache/
